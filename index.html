@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Form - 動態表單元件</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --secondary-color: #6c757d;
+      --success-color: #198754;
+      --danger-color: #dc3545;
+      --light-bg: #f8f9fa;
+      --border-color: #dee2e6;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .container {
+      max-width: 1200px;
+    }
+
+    .page-header {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+      background: white;
+      border-radius: 0 0 1rem 1rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .demo-nav {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .demo-nav .nav-pills {
+      gap: 0.5rem;
+    }
+
+    .demo-nav .nav-link {
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .demo-nav .nav-link:not(.active) {
+      color: var(--secondary-color);
+      background: transparent;
+    }
+
+    .demo-nav .nav-link:not(.active):hover {
+      background: var(--light-bg);
+      color: var(--primary-color);
+    }
+
+    .form-section {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+
+    .form-section.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #212529;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary-color);
+      display: inline-block;
+    }
+
+    .field-type-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      background-color: #e7f1ff;
+      color: #0d6efd;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-left: 0.5rem;
+    }
+
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .code-block .comment {
+      color: #6a9955;
+    }
+
+    .code-block .keyword {
+      color: #569cd6;
+    }
+
+    .code-block .string {
+      color: #ce9178;
+    }
+
+    .code-block .number {
+      color: #b5cea8;
+    }
+
+    .code-block .property {
+      color: #9cdcfe;
+    }
+
+    .api-demo {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8125rem;
+    }
+
+    .api-demo .method {
+      color: #4ec9b0;
+    }
+
+    .api-demo .url {
+      color: #ce9178;
+    }
+
+    .api-demo .status {
+      font-weight: 600;
+    }
+
+    .api-demo .status.success {
+      color: #4ec9b0;
+    }
+
+    .api-demo .status.error {
+      color: #f14c4c;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list i {
+      color: var(--success-color);
+      margin-right: 0.75rem;
+    }
+
+    .response-log {
+      background: #f8f9fa;
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .response-log pre {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #495057;
+    }
+
+    footer {
+      background: white;
+      padding: 2rem 0;
+      margin-top: 3rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+      .page-header {
+        padding: 1.5rem 0;
+      }
+
+      .demo-nav .nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+        Dynamic Form
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#features">功能</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#demo">範例</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#usage">使用方式</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-2">Dynamic Form Component</h1>
+      <p class="lead text-muted mb-0">Angular 動態表單元件 - 依據 JSON 配置自動生成表單</p>
+    </div>
+  </header>
+
+  <main class="container pb-5">
+    <section id="features" class="mb-5">
+      <h2 class="section-title">功能特色</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="feature-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>支援多種欄位類型：文字、文字區塊、文字編輯器、下拉選單、選項按鈕、核取方塊、檔案上傳等</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>矩陣表單 (Matrix Field) 支援嵌套多層子表單</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>依據 JSON 配置自動生成表單結構</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>內建豐富的 Regex 驗證規則</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>支援 Bootstrap 5 佈局，響應式設計</span>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="feature-list">
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>支援拖曳檔案上傳</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>檔案預覽功能</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>自訂驗證規則與錯誤訊息</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>API 整合服務，支援表單提交</span>
+            </li>
+            <li>
+              <i class="bi bi-check-circle-fill"></i>
+              <span>相容主流桌面與手機螢幕</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" class="mb-5">
+      <h2 class="section-title mb-4">線上範例</h2>
+
+      <div class="demo-nav mb-4">
+        <ul class="nav nav-pills justify-content-center flex-wrap">
+          <li class="nav-item">
+            <a class="nav-link active" data-tab="basic">
+              <i class="bi bi-person-plus me-1"></i>
+              用戶註冊表單
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-tab="matrix">
+              <i class="bi bi-table me-1"></i>
+              矩陣表單
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-tab="complex">
+              <i class="bi bi-grid me-1"></i>
+              綜合範例
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-tab="json">
+              <i class="bi bi-code-slash me-1"></i>
+              JSON 配置
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div id="basic-tab" class="form-section active">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                  <i class="bi bi-person-plus me-2"></i>
+                  用戶註冊表單
+                </h5>
+              </div>
+              <div class="card-body">
+                <form id="demo-basic-form" class="dynamic-form">
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">
+                        用戶名
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input type="text" class="form-control" name="username" placeholder="請輸入用戶名" required>
+                      <div class="form-text">3-20個字元</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">
+                        電子郵件
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input type="email" class="form-control" name="email" placeholder="example@mail.com" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">
+                        密碼
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input type="password" class="form-control" name="password" placeholder="請輸入密碼" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">
+                        確認密碼
+                        <span class="text-danger">*</span>
+                      </label>
+                      <input type="password" class="form-control" name="confirmPassword" placeholder="請再次輸入密碼" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">電話</label>
+                      <input type="text" class="form-control" name="phone" placeholder="+886-912345678">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">
+                        性別
+                        <span class="text-danger">*</span>
+                      </label>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" value="male">
+                        <label class="form-check-label">男性</label>
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender" value="female">
+                        <label class="form-check-label">女性</label>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">
+                        國家
+                        <span class="text-danger">*</span>
+                      </label>
+                      <select class="form-select" name="country" required>
+                        <option value="">請選擇國家</option>
+                        <option value="tw">台灣</option>
+                        <option value="hk">香港</option>
+                        <option value="cn">中國</option>
+                        <option value="jp">日本</option>
+                        <option value="us">美國</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">出生日期</label>
+                      <input type="date" class="form-control" name="birthDate">
+                    </div>
+                    <div class="col-12 mb-3">
+                      <label class="form-label">個人簡介</label>
+                      <textarea class="form-control" name="bio" rows="3" placeholder="請簡單介紹自己..."></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">頭像上傳</label>
+                      <input type="file" class="form-control" accept="image/*">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="form-label">附件上傳</label>
+                      <input type="file" class="form-control" multiple accept=".pdf,.doc,.docx">
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <button type="submit" class="btn btn-primary me-2">
+                      <i class="bi bi-check-lg me-1"></i>
+                      提交
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary">
+                      <i class="bi bi-arrow-counterclockwise me-1"></i>
+                      取消
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="matrix-tab" class="form-section">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                  <i class="bi bi-table me-2"></i>
+                  矩陣表單 - 家庭成員
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead class="table-light">
+                      <tr>
+                        <th>姓名</th>
+                        <th>關係</th>
+                        <th>年齡</th>
+                        <th>職業</th>
+                        <th style="width: 50px;"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><input type="text" class="form-control form-control-sm" placeholder="姓名"></td>
+                        <td>
+                          <select class="form-select form-select-sm">
+                            <option value="">請選擇</option>
+                            <option value="father">父親</option>
+                            <option value="mother">母親</option>
+                            <option value="child">子女</option>
+                            <option value="sibling">兄弟</option>
+                          </select>
+                        </td>
+                        <td><input type="number" class="form-control form-control-sm" placeholder="年齡"></td>
+                        <td><input type="text" class="form-control form-control-sm" placeholder="職業"></td>
+                        <td>
+                          <button class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-dash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><input type="text" class="form-control form-control-sm" placeholder="姓名"></td>
+                        <td>
+                          <select class="form-select form-select-sm">
+                            <option value="">請選擇</option>
+                            <option value="father">父親</option>
+                            <option value="mother">母親</option>
+                            <option value="child">子女</option>
+                            <option value="sibling">兄弟</option>
+                          </select>
+                        </td>
+                        <td><input type="number" class="form-control form-control-sm" placeholder="年齡"></td>
+                        <td><input type="text" class="form-control form-control-sm" placeholder="職業"></td>
+                        <td>
+                          <button class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-dash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <button class="btn btn-outline-primary btn-sm mt-2">
+                  <i class="bi bi-plus me-1"></i>
+                  新增列
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="complex-tab" class="form-section">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card mb-4">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">綜合範例 - 展示所有欄位類型</h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <h6 class="text-muted border-bottom pb-2">基础欄位</h6>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">文字輸入 (Text)</label>
+                    <input type="text" class="form-control" placeholder="文字輸入框">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">電子郵件 (Email)</label>
+                    <input type="email" class="form-control" placeholder="example@mail.com">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">數字輸入 (Number)</label>
+                    <input type="number" class="form-control" placeholder="0">
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">日期選擇 (Date)</label>
+                    <input type="date" class="form-control">
+                  </div>
+                  <div class="col-md-12 mb-3">
+                    <label class="form-label">文字區塊 (Textarea)</label>
+                    <textarea class="form-control" rows="3" placeholder="多行文字輸入..."></textarea>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">下拉選單 (Select)</label>
+                    <select class="form-select">
+                      <option value="">請選擇</option>
+                      <option value="1">選項一</option>
+                      <option value="2">選項二</option>
+                      <option value="3">選項三</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">核取方塊 (Checkbox)</label>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="check1">
+                      <label class="form-check-label" for="check1">選項一</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="check2">
+                      <label class="form-check-label" for="check2">選項二</label>
+                    </div>
+                  </div>
+                  <div class="col-md-12 mb-3">
+                    <label class="form-label">選項按鈕 (Radio)</label>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="radioGroup" id="radio1">
+                      <label class="form-check-label" for="radio1">選項一</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="radioGroup" id="radio2">
+                      <label class="form-check-label" for="radio2">選項二</label>
+                    </div>
+                  </div>
+                  <div class="col-md-12 mb-3">
+                    <label class="form-label">檔案上傳 (Upload)</label>
+                    <div class="upload-area" style="border: 2px dashed #ccc; padding: 2rem; text-align: center; border-radius: 0.5rem; cursor: pointer;">
+                      <i class="bi bi-cloud-upload" style="font-size: 2rem; color: #6c757d;"></i>
+                      <p class="mb-0 mt-2">點擊或拖曳檔案至此處上傳</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="json-tab" class="form-section">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">JSON 配置範例</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="copyConfig()">
+                  <i class="bi bi-clipboard me-1"></i>
+                  複製
+                </button>
+              </div>
+              <div class="card-body p-0">
+                <pre class="code-block m-0" id="config-json">{
+  "id": "user-registration",
+  "title": "用戶註冊表單",
+  "description": "請填寫以下資訊以完成註冊",
+  "apiEndpoint": "/api/users",
+  "method": "POST",
+  "submitLabel": "提交註冊",
+  "showCancel": true,
+  "fields": [
+    {
+      "key": "username",
+      "label": "用戶名",
+      "type": "text",
+      "width": 6,
+      "validation": [
+        { "type": "required", "message": "請輸入用戶名" },
+        { "type": "minLength", "value": 3, "message": "用戶名至少需要3個字元" },
+        { "type": "maxLength", "value": 20, "message": "用戶名最多20個字元" }
+      ]
+    },
+    {
+      "key": "email",
+      "label": "電子郵件",
+      "type": "email",
+      "width": 6,
+      "validation": [
+        { "type": "required", "message": "請輸入電子郵件" },
+        { "type": "pattern", "value": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", "message": "請輸入有效的電子郵件地址" }
+      ]
+    },
+    {
+      "key": "familyMembers",
+      "label": "家庭成員",
+      "type": "matrix",
+      "width": 12,
+      "matrixConfig": [
+        {
+          "key": "family",
+          "columns": [
+            { "key": "name", "label": "姓名", "type": "text" },
+            { "key": "relationship", "label": "關係", "type": "select", "options": [...] },
+            { "key": "age", "label": "年齡", "type": "number" }
+          ],
+          "repeatable": true,
+          "minRows": 1,
+          "maxRows": 10
+        }
+      ]
+    },
+    {
+      "key": "avatar",
+      "label": "頭像上傳",
+      "type": "upload",
+      "uploadConfig": {
+        "accept": "image/jpeg,image/png,image/gif",
+        "maxSize": 2097152,
+        "maxFiles": 1
+      }
+    }
+  ]
+}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="usage" class="mb-5">
+      <h2 class="section-title">使用方式</h2>
+      <div class="row">
+        <div class="col-lg-8">
+          <h5 class="mb-3">1. 安裝依賴</h5>
+          <div class="code-block mb-4">
+            <span class="comment"># 使用 npm</span>
+            npm install bootstrap @angular/core @angular/forms @angular/common
+
+            <span class="comment"># 或使用 yarn</span>
+            yarn add bootstrap @angular/core @angular/forms @angular/common
+          </div>
+
+          <h5 class="mb-3">2. 在模組中引入</h5>
+          <div class="code-block mb-4">
+            <span class="keyword">import</span> { NgModule } <span class="keyword">from</span> <span class="string">'@angular/core'</span>;
+            <span class="keyword">import</span> { BrowserModule } <span class="keyword">from</span> <span class="string">'@angular/platform-browser'</span>;
+            <span class="keyword">import</span> { ReactiveFormsModule } <span class="keyword">from</span> <span class="string">'@angular/forms'</span>;
+            <span class="keyword">import</span> { HttpClientModule } <span class="keyword">from</span> <span class="string">'@angular/common/http'</span>;
+
+            <span class="keyword">import</span> { DynamicFormComponent } <span class="keyword">from</span> <span class="string">'./components/dynamic-form/dynamic-form.component'</span>;
+
+            <span class="keyword">@NgModule</span>({
+              <span class="property">declarations</span>: [
+                AppComponent,
+                DynamicFormComponent
+              ],
+              <span class="property">imports</span>: [
+                BrowserModule,
+                ReactiveFormsModule,
+                HttpClientModule
+              ],
+              <span class="property">bootstrap</span>: [AppComponent]
+            })
+            <span class="keyword">export class</span> AppModule { }
+          </div>
+
+          <h5 class="mb-3">3. 在範本中使用</h5>
+          <div class="code-block mb-4">
+            <span class="comment">&lt;!-- 基本用法 --&gt;</span>
+            &lt;app-dynamic-form
+              [config]=<span class="string">"formConfig"</span>
+              (formSubmitted)=<span class="string">"onSubmit($event)"</span>
+            &gt;&lt;/app-dynamic-form&gt;
+
+            <span class="comment">&lt;!-- 帶有初始資料 --&gt;</span>
+            &lt;app-dynamic-form
+              [config]=<span class="string">"formConfig"</span>
+              [initialData]=<span class="string">"initialData"</span>
+              (formSubmitted)=<span class="string">"onSubmit($event)"</span>
+            &gt;&lt;/app-dynamic-form&gt;
+          </div>
+
+          <h5 class="mb-3">4. 定義表單配置</h5>
+          <div class="code-block">
+            <span class="keyword">import</span> { FormConfig } <span class="keyword">from</span> <span class="string">'./models/dynamic-form.model'</span>;
+
+            <span class="keyword">const</span> formConfig: FormConfig = {
+              <span class="property">id</span>: <span class="string">'user-form'</span>,
+              <span class="property">title</span>: <span class="string">'用戶註冊'</span>,
+              <span class="property">apiEndpoint</span>: <span class="string">'/api/users'</span>,
+              <span class="property">method</span>: <span class="string">'POST'</span>,
+              <span class="property">fields</span>: [
+                {
+                  <span class="property">key</span>: <span class="string">'username'</span>,
+                  <span class="property">label</span>: <span class="string">'用戶名'</span>,
+                  <span class="property">type</span>: <span class="string">'text'</span>,
+                  <span class="property">width</span>: <span class="number">6</span>,
+                  <span class="property">validation</span>: [
+                    { <span class="property">type</span>: <span class="string">'required'</span>, <span class="property">message</span>: <span class="string">'請輸入用戶名'</span> }
+                  ]
+                },
+                {
+                  <span class="property">key</span>: <span class="string">'email'</span>,
+                  <span class="property">label</span>: <span class="string">'電子郵件'</span>,
+                  <span class="property">type</span>: <span class="string">'email'</span>,
+                  <span class="property">width</span>: <span class="number">6</span>
+                }
+              ]
+            };
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">支援的欄位類型</h6>
+            </div>
+            <div class="card-body p-0">
+              <table class="table table-sm mb-0">
+                <thead>
+                  <tr>
+                    <th>類型</th>
+                    <th>說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>text</code></td><td>文字輸入</td></tr>
+                  <tr><td><code>email</code></td><td>電子郵件</td></tr>
+                  <tr><td><code>number</code></td><td>數字輸入</td></tr>
+                  <tr><td><code>textarea</code></td><td>文字區塊</td></tr>
+                  <tr><td><code>select</code></td><td>下拉選單</td></tr>
+                  <tr><td><code>checkbox</code></td><td>核取方塊</td></tr>
+                  <tr><td><code>radio</code></td><td>選項按鈕</td></tr>
+                  <tr><td><code>date</code></td><td>日期選擇</td></tr>
+                  <tr><td><code>upload</code></td><td>檔案上傳</td></tr>
+                  <tr><td><code>matrix</code></td><td>矩陣表單</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card mt-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">驗證規則</h6>
+            </div>
+            <div class="card-body p-0">
+              <table class="table table-sm mb-0">
+                <thead>
+                  <tr>
+                    <th>類型</th>
+                    <th>說明</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>required</code></td><td>必填</td></tr>
+                  <tr><td><code>minLength</code></td><td>最小長度</td></tr>
+                  <tr><td><code>maxLength</code></td><td>最大長度</td></tr>
+                  <tr><td><code>min</code></td><td>最小值</td></tr>
+                  <tr><td><code>max</code></td><td>最大值</td></tr>
+                  <tr><td><code>pattern</code></td><td>正則表達式</td></tr>
+                  <tr><td><code>custom</code></td><td>自訂驗證</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <p class="text-muted mb-0">
+            &copy; 2024 Dynamic Form Component. All rights reserved.
+          </p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="text-muted mb-0">
+            Build with Angular + Bootstrap 5
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const navLinks = document.querySelectorAll('.demo-nav .nav-link');
+      const formSections = document.querySelectorAll('.form-section');
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          const tab = this.getAttribute('data-tab');
+
+          navLinks.forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+
+          formSections.forEach(section => {
+            section.classList.remove('active');
+            if (section.id === tab + '-tab') {
+              section.classList.add('active');
+            }
+          });
+        });
+      });
+    });
+
+    function copyConfig() {
+      const configText = document.getElementById('config-json').textContent;
+      navigator.clipboard.writeText(configText).then(() => {
+        alert('已複製到剪貼簿！');
+      });
+    }
+  </script>
+</body>
+</html>
