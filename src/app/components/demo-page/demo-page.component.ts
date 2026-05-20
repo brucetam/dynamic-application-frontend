@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormConfig } from '../../models/dynamic-form.model';
-import { ApiService, ApiResponse } from '../../services/api.service';
 import { DEMO_FORM_CONFIG, DEMO_MATRIX_CONFIG, COMPLEX_FORM_CONFIG } from '../../config/form-config';
 
 @Component({
@@ -150,7 +149,7 @@ export class DemoPageComponent implements OnInit {
     complex: COMPLEX_FORM_CONFIG
   };
 
-  constructor(private apiService: ApiService) {}
+  constructor() {}
 
   ngOnInit(): void {}
 
@@ -163,30 +162,8 @@ export class DemoPageComponent implements OnInit {
   }
 
   onFormSubmitted(data: any): void {
-    this.lastSubmission = data;
+    this.lastSubmission = data.submission || data;
     this.lastError = null;
-
-    const config = this.currentConfig;
-    if (config.apiEndpoint && config.method) {
-      this.submitToApi(data, config);
-    }
-  }
-
-  private submitToApi(data: any, config: FormConfig): void {
-    this.apiService.submitForm({
-      formId: config.apiEndpoint,
-      data: data.data,
-      files: data.files
-    }).subscribe({
-      next: (response: ApiResponse) => {
-        console.log('API Response:', response);
-        alert('提交成功！');
-      },
-      error: (error) => {
-        this.lastError = error;
-        console.error('API Error:', error);
-      }
-    });
   }
 
   onFormError(errors: any): void {

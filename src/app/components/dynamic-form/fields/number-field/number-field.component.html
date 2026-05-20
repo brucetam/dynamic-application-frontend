@@ -1,0 +1,18 @@
+<div class="field-control" [formGroup]="form">
+  <label [for]="field.key" class="form-label">
+    {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+  </label>
+  <input
+    type="number"
+    class="form-control"
+    [class.is-invalid]="errorMessage"
+    [id]="field.key"
+    [formControlName]="field.key"
+    [placeholder]="field.placeholder || ''"
+    [readonly]="isReadonly"
+    [attr.disabled]="field.disabled ? true : null"
+    (blur)="updateValue(control?.value)"
+  />
+  <small class="form-text text-muted" *ngIf="field.hint">{{ field.hint }}</small>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

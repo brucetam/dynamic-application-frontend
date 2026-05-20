@@ -1,0 +1,16 @@
+<ng-container [ngSwitch]="field.type">
+  <app-text-field *ngSwitchCase="'text'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-text-field>
+  <app-phone-field *ngSwitchCase="'phone'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-phone-field>
+  <app-password-field *ngSwitchCase="'password'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-password-field>
+  <app-email-field *ngSwitchCase="'email'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-email-field>
+  <app-textarea-field *ngSwitchCase="'textarea'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-textarea-field>
+  <app-text-editor-field *ngSwitchCase="'texteditor'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-text-editor-field>
+  <app-select-field *ngSwitchCase="'select'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-select-field>
+  <app-number-field *ngSwitchCase="'number'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-number-field>
+  <app-date-field *ngSwitchCase="'date'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-date-field>
+  <app-checkbox-field *ngSwitchCase="'checkbox'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-checkbox-field>
+  <app-radio-field *ngSwitchCase="'radio'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-radio-field>
+  <app-upload-field *ngSwitchCase="'upload'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)" (fileSelected)="fileSelected.emit($event)"></app-upload-field>
+  <app-matrix-field *ngSwitchCase="'matrix'" [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)" (fileSelected)="fileSelected.emit($event)"></app-matrix-field>
+  <app-text-field *ngSwitchDefault [field]="field" [form]="form" [readonly]="readonly" [errors]="errors" (fieldChanged)="fieldChanged.emit($event)"></app-text-field>
+</ng-container>

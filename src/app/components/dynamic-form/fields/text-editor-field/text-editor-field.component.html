@@ -1,0 +1,22 @@
+<div class="field-control" [formGroup]="form">
+  <label [for]="field.key" class="form-label">
+    {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+  </label>
+  <div class="text-editor">
+    <div class="editor-toolbar" *ngIf="!isReadonly">
+      <button type="button" class="btn btn-sm btn-outline-secondary" title="Bold" (click)="exec('bold')"><i class="bi bi-type-bold"></i></button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" title="Italic" (click)="exec('italic')"><i class="bi bi-type-italic"></i></button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" title="Underline" (click)="exec('underline')"><i class="bi bi-type-underline"></i></button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" title="List" (click)="exec('insertUnorderedList')"><i class="bi bi-list-ul"></i></button>
+    </div>
+    <div
+      class="form-control editor-content"
+      [class.is-invalid]="errorMessage"
+      [attr.contenteditable]="isReadonly ? 'false' : 'true'"
+      [innerHTML]="control?.value || ''"
+      (blur)="updateValue($any($event.target).innerHTML)"
+    ></div>
+  </div>
+  <small class="form-text text-muted" *ngIf="field.hint">{{ field.hint }}</small>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

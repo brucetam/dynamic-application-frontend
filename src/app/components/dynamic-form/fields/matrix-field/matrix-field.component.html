@@ -1,0 +1,37 @@
+<div class="field-control matrix-field" [formGroup]="form">
+  <div class="matrix-heading">
+    <div>
+      <label class="form-label mb-1">
+        {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+      </label>
+      <small class="form-text text-muted d-block" *ngIf="field.hint">{{ field.hint }}</small>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary" (click)="addRow()" *ngIf="canAddRow">
+      <i class="bi bi-plus-lg"></i>
+    </button>
+  </div>
+
+  <div class="matrix-rows">
+    <div class="matrix-row" *ngFor="let rowForm of rowForms; let rowIndex = index">
+      <div class="matrix-row-header">
+        <span>{{ matrixConfig?.label || field.label }} #{{ rowIndex + 1 }}</span>
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeRow(rowIndex)" *ngIf="canRemoveRow">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+      <div class="form-flex" [formGroup]="rowForm">
+        <div class="field-shell" *ngFor="let childField of childFields" [ngStyle]="fieldStyle(childField)">
+          <app-field-renderer
+            [field]="childField"
+            [form]="rowForm"
+            [readonly]="readonly || !!field.readonly"
+            [errors]="{}"
+            (fieldChanged)="syncRows()"
+            (fileSelected)="fileSelected.emit($event)"
+          ></app-field-renderer>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

@@ -1,5 +1,7 @@
 export type FieldType = 
   | 'text' 
+  | 'phone'
+  | 'password'
   | 'email' 
   | 'textarea' 
   | 'texteditor' 
@@ -24,7 +26,12 @@ export interface UploadConfig {
   uploadUrl?: string;
 }
 
-export interface MatrixColumn {
+export interface PhoneConfig {
+  defaultCountryCode?: string;
+  countryCodes?: SelectOption[];
+}
+
+export interface MatrixColumn extends Partial<FieldConfig> {
   key: string;
   label: string;
   type: FieldType;
@@ -37,6 +44,7 @@ export interface MatrixRow {
   key: string;
   label: string;
   columns: MatrixColumn[];
+  fields?: FieldConfig[];
   repeatable?: boolean;
   minRows?: number;
   maxRows?: number;
@@ -56,7 +64,9 @@ export interface FieldConfig {
   width?: number;
   defaultValue?: any;
   options?: SelectOption[];
+  multiple?: boolean;
   validation?: ValidationRule[];
+  phoneConfig?: PhoneConfig;
   uploadConfig?: UploadConfig;
   matrixConfig?: MatrixRow[];
   disabled?: boolean;

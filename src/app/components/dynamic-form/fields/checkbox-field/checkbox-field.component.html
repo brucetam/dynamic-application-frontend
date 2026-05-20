@@ -1,0 +1,18 @@
+<div class="field-control" [formGroup]="form">
+  <div class="form-check">
+    <input
+      type="checkbox"
+      class="form-check-input"
+      [class.is-invalid]="errorMessage"
+      [id]="field.key"
+      [formControlName]="field.key"
+      [disabled]="isReadonly || field.disabled"
+      (change)="updateValue($any($event.target).checked)"
+    />
+    <label [for]="field.key" class="form-check-label">
+      {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+    </label>
+  </div>
+  <small class="form-text text-muted" *ngIf="field.hint">{{ field.hint }}</small>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

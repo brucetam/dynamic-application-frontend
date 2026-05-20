@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.phone-control {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.phone-code {
+  flex: 0 0 7rem;
+}
+
+@media (max-width: 767.98px) {
+  .phone-control {
+    flex-direction: column;
+  }
+
+  .phone-code {
+    flex-basis: auto;
+  }
+}

@@ -1,449 +1,61 @@
-<div class="dynamic-form" [ngClass]="config?.cssClass || ''">
-  <div class="card">
-    <div class="card-header" *ngIf="config?.title">
-      <h5 class="card-title">{{ config.title }}</h5>
-      <p class="card-subtitle text-muted" *ngIf="config?.description">
-        {{ config.description }}
-      </p>
-    </div>
+<div class="dynamic-form" [ngClass]="config?.cssClass || ''" *ngIf="form">
+  <section class="form-panel">
+    <header class="form-header" *ngIf="config?.title || config?.description">
+      <div>
+        <h5 class="form-title" *ngIf="config?.title">{{ config.title }}</h5>
+        <p class="form-description" *ngIf="config?.description">{{ config.description }}</p>
+      </div>
+    </header>
 
-    <div class="card-body">
-      <form [formGroup]="form" (ngSubmit)="submit()">
-        <div class="row">
-          <ng-container *ngFor="let field of config.fields">
-            <div [class]="getColumnClass(field.width || 12)" [ngClass]="getFieldClass(field)">
-              <ng-container [ngSwitch]="field.type">
-                
-                <!-- Text Field -->
-                <ng-container *ngSwitchCase="'text'">
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      [id]="field.key"
-                      [formControlName]="field.key"
-                      [placeholder]="field.placeholder || ''"
-                      [readonly]="readonly || field.readonly"
-                      [disabled]="field.disabled"
-                      class="form-control"
-                      [class.is-invalid]="isFieldInvalid(field.key)"
-                      (blur)="onFieldChange(field, $event.target.value)"
-                    />
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Email Field -->
-                <ng-container *ngSwitchCase="'email'">
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      [id]="field.key"
-                      [formControlName]="field.key"
-                      [placeholder]="field.placeholder || ''"
-                      [readonly]="readonly || field.readonly"
-                      [disabled]="field.disabled"
-                      class="form-control"
-                      [class.is-invalid]="isFieldInvalid(field.key)"
-                      (blur)="onFieldChange(field, $event.target.value)"
-                    />
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Number Field -->
-                <ng-container *ngSwitchCase="'number'">
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      [id]="field.key"
-                      [formControlName]="field.key"
-                      [placeholder]="field.placeholder || ''"
-                      [readonly]="readonly || field.readonly"
-                      [disabled]="field.disabled"
-                      class="form-control"
-                      [class.is-invalid]="isFieldInvalid(field.key)"
-                      (blur)="onFieldChange(field, $event.target.value)"
-                    />
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Textarea Field -->
-                <ng-container *ngSwitchCase="'textarea'">
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <textarea
-                      [id]="field.key"
-                      [formControlName]="field.key"
-                      [placeholder]="field.placeholder || ''"
-                      [readonly]="readonly || field.readonly"
-                      [disabled]="field.disabled"
-                      rows="4"
-                      class="form-control"
-                      [class.is-invalid]="isFieldInvalid(field.key)"
-                      (blur)="onFieldChange(field, $event.target.value)"
-                    ></textarea>
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Text Editor (Simple WYSIWYG) -->
-                <ng-container *ngSwitchCase="'texteditor'">
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <div class="text-editor-container" [class.readonly]="readonly || field.readonly">
-                      <div class="editor-toolbar" *ngIf="!readonly && !field.readonly">
-                        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="execCommand('bold')">
-                          <strong>B</strong>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="execCommand('italic')">
-                          <em>I</em>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="execCommand('underline')">
-                          <u>U</u>
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="execCommand('insertUnorderedList')">
-                          •
-                        </button>
-                      </div>
-                      <div
-                        [id]="field.key"
-                        [formControlName]="field.key"
-                        contenteditable="true"
-                        [attr.contenteditable]="readonly || field.readonly ? 'false' : 'true'"
-                        class="form-control editor-content"
-                        [class.is-invalid]="isFieldInvalid(field.key)"
-                        (blur)="onFieldChange(field, $event.target.innerHTML)"
-                      ></div>
-                    </div>
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Select Field -->
-                <ng-container *ngSwitchCase="'select'">
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <select
-                      [id]="field.key"
-                      [formControlName]="field.key"
-                      [disabled]="field.disabled"
-                      class="form-select"
-                      [class.is-invalid]="isFieldInvalid(field.key)"
-                      (change)="onFieldChange(field, $event.target.value)"
-                    >
-                      <option value="">{{ field.placeholder || '請選擇' }}</option>
-                      <option *ngFor="let option of field.options" [value]="option.value">
-                        {{ option.label }}
-                      </option>
-                    </select>
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Checkbox Field -->
-                <ng-container *ngSwitchCase="'checkbox'">
-                  <div class="form-group">
-                    <div class="form-check">
-                      <input
-                        type="checkbox"
-                        [id]="field.key"
-                        [formControlName]="field.key"
-                        [disabled]="field.disabled"
-                        class="form-check-input"
-                        [class.is-invalid]="isFieldInvalid(field.key)"
-                        (change)="onFieldChange(field, $event.target.checked)"
-                      />
-                      <label [for]="field.key" class="form-check-label">
-                        {{ field.label }}
-                      </label>
-                    </div>
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Radio Field -->
-                <ng-container *ngSwitchCase="'radio'">
-                  <div class="form-group">
-                    <label class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <div class="form-check" *ngFor="let option of field.options">
-                      <input
-                        type="radio"
-                        [id]="field.key + '_' + option.value"
-                        [formControlName]="field.key"
-                        [value]="option.value"
-                        [disabled]="field.disabled"
-                        class="form-check-input"
-                        (change)="onFieldChange(field, option.value)"
-                      />
-                      <label [for]="field.key + '_' + option.value" class="form-check-label">
-                        {{ option.label }}
-                      </label>
-                    </div>
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Date Field -->
-                <ng-container *ngSwitchCase="'date'">
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      [id]="field.key"
-                      [formControlName]="field.key"
-                      [placeholder]="field.placeholder || ''"
-                      [readonly]="readonly || field.readonly"
-                      [disabled]="field.disabled"
-                      class="form-control"
-                      [class.is-invalid]="isFieldInvalid(field.key)"
-                      (blur)="onFieldChange(field, $event.target.value)"
-                    />
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Upload Field -->
-                <ng-container *ngSwitchCase="'upload'">
-                  <div class="form-group">
-                    <label class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    
-                    <div class="upload-area" 
-                         [class.readonly]="readonly || field.readonly"
-                         [class.has-files]="uploadedFiles[field.key]?.length"
-                         (click)="fileInput.click()"
-                         (dragover)="onDragOver($event)"
-                         (dragleave)="onDragLeave($event)"
-                         (drop)="onDrop($event, field)"
-                    >
-                      <input
-                        #fileInput
-                        type="file"
-                        [accept]="field.uploadConfig?.accept"
-                        [multiple]="field.uploadConfig?.maxFiles > 1"
-                        class="d-none"
-                        (change)="onFileSelected(field, $event.target.files)"
-                      />
-                      <div class="upload-placeholder" *ngIf="!uploadedFiles[field.key]?.length">
-                        <i class="bi bi-cloud-upload"></i>
-                        <p>{{ field.placeholder || '點擊或拖曳檔案至此處上傳' }}</p>
-                        <small class="text-muted" *ngIf="field.uploadConfig?.accept">
-                          支援格式: {{ field.uploadConfig.accept }}
-                        </small>
-                      </div>
-                    </div>
-
-                    <div class="file-list" *ngIf="uploadedFiles[field.key]?.length">
-                      <div class="file-item" *ngFor="let file of uploadedFiles[field.key]; let i = index">
-                        <div class="file-preview" *ngIf="filePreviews[field.key]?.[i]?.startsWith('blob:')">
-                          <img [src]="filePreviews[field.key][i]" [alt]="file.name" />
-                        </div>
-                        <div class="file-icon" *ngIf="!filePreviews[field.key]?.[i]?.startsWith('blob:')">
-                          <i class="bi bi-file-earmark"></i>
-                        </div>
-                        <span class="file-name">{{ file.name }}</span>
-                        <button type="button" class="btn-remove" (click)="removeFile(field.key, i)" *ngIf="!readonly && !field.readonly">
-                          <i class="bi bi-x"></i>
-                        </button>
-                      </div>
-                    </div>
-
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback d-block" *ngIf="getErrorMessage(field.key)">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Matrix Field (Nested Table) -->
-                <ng-container *ngSwitchCase="'matrix'">
-                  <div class="matrix-container">
-                    <label class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-
-                    <div class="table-responsive">
-                      <table class="table table-bordered table-sm">
-                        <thead>
-                          <tr>
-                            <th *ngFor="let col of field.matrixConfig?.[0]?.columns">
-                              {{ col.label }}
-                            </th>
-                            <th *ngIf="field.matrixConfig?.[0]?.repeatable && !readonly && !field.readonly"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let row of matrixData[field.key]; let rowIndex = index; trackBy: trackByIndex"
-                              draggable="true"
-                              [class.dragging]="draggingRowIndex === rowIndex"
-                              [class.drag-over]="dragOverRowIndex === rowIndex"
-                              (dragstart)="onMatrixDragStart($event, rowIndex)"
-                              (dragover)="onMatrixDragOver($event, rowIndex)"
-                              (dragleave)="onMatrixDragLeave($event)"
-                              (drop)="onMatrixDrop($event, field, rowIndex)"
-                              (dragend)="onMatrixDragEnd($event)">
-                            <td *ngFor="let col of field.matrixConfig?.[0]?.columns">
-                              <ng-container [ngSwitch]="col.type">
-                                <input
-                                  *ngSwitchCase="'text'"
-                                  type="text"
-                                  [value]="row[col.key]"
-                                  [readonly]="readonly || field.readonly"
-                                  class="form-control form-control-sm"
-                                  (blur)="onMatrixCellChange(field, rowIndex, col, $event.target.value)"
-                                />
-                                <input
-                                  *ngSwitchCase="'number'"
-                                  type="number"
-                                  [value]="row[col.key]"
-                                  [readonly]="readonly || field.readonly"
-                                  class="form-control form-control-sm"
-                                  (blur)="onMatrixCellChange(field, rowIndex, col, $event.target.value)"
-                                />
-                                <select
-                                  *ngSwitchCase="'select'"
-                                  [value]="row[col.key]"
-                                  [disabled]="readonly || field.readonly"
-                                  class="form-select form-select-sm"
-                                  (change)="onMatrixCellChange(field, rowIndex, col, $event.target.value)"
-                                >
-                                  <option *ngFor="let opt of col.options" [value]="opt.value">
-                                    {{ opt.label }}
-                                  </option>
-                                </select>
-                              </ng-container>
-                            </td>
-                            <td *ngIf="field.matrixConfig?.[0]?.repeatable && !readonly && !field.readonly">
-                              <div class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-outline-secondary" (click)="moveMatrixRow(field, rowIndex, -1)" [disabled]="rowIndex === 0" title="往上移">
-                                  <i class="bi bi-arrow-up"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary" (click)="moveMatrixRow(field, rowIndex, 1)" [disabled]="rowIndex === matrixData[field.key].length - 1" title="往下移">
-                                  <i class="bi bi-arrow-down"></i>
-                                </button>
-                                <button type="button" class="btn btn-outline-danger" (click)="removeMatrixRow(field, rowIndex)" title="刪除">
-                                  <i class="bi bi-trash"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-
-                    <button type="button" 
-                            class="btn btn-outline-primary btn-sm mt-2" 
-                            *ngIf="field.matrixConfig?.[0]?.repeatable && !readonly && !field.readonly"
-                            (click)="addMatrixRow(field)">
-                      <i class="bi bi-plus"></i> 新增列
-                    </button>
-
-                    <small class="form-hint text-muted d-block" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback d-block" *ngIf="getErrorMessage(field.key)">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-                <!-- Nested Fields (Sub-form) -->
-                <ng-container *ngSwitchCase="'nested'">
-                  <fieldset class="nested-fieldset">
-                    <legend>{{ field.label }}</legend>
-                    <app-dynamic-form
-                      [config]="{ id: field.key, title: '', fields: field.nestedFields || [] }"
-                      [initialData]="form.get(field.key)?.value || {}"
-                      [readonly]="readonly || field.readonly"
-                      (formChanged)="onFieldChange(field, $event)"
-                    ></app-dynamic-form>
-                  </fieldset>
-                </ng-container>
-
-                <!-- Default: Text Field -->
-                <ng-container *ngSwitchDefault>
-                  <div class="form-group">
-                    <label [for]="field.key" class="form-label">
-                      {{ field.label }}
-                      <span *ngIf="hasRequiredValidator(field)" class="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      [id]="field.key"
-                      [formControlName]="field.key"
-                      [placeholder]="field.placeholder || ''"
-                      [readonly]="readonly || field.readonly"
-                      [disabled]="field.disabled"
-                      class="form-control"
-                      [class.is-invalid]="isFieldInvalid(field.key)"
-                      (blur)="onFieldChange(field, $event.target.value)"
-                    />
-                    <small class="form-hint text-muted" *ngIf="field.hint">{{ field.hint }}</small>
-                    <div class="invalid-feedback">{{ getErrorMessage(field.key) }}</div>
-                  </div>
-                </ng-container>
-
-              </ng-container>
-            </div>
-          </ng-container>
+    <form [formGroup]="form" (ngSubmit)="openPreview()">
+      <div class="form-flex">
+        <div class="field-shell" *ngFor="let field of fields" [ngStyle]="fieldStyle(field)">
+          <app-field-renderer
+            [field]="field"
+            [form]="form"
+            [readonly]="readonly"
+            [errors]="errors"
+            (fieldChanged)="onFieldChanged()"
+            (fileSelected)="onFileSelected($event)"
+          ></app-field-renderer>
         </div>
+      </div>
 
-        <!-- Form Actions -->
-        <div class="form-actions mt-4">
-          <div class="row">
-            <div class="col-12">
-              <div class="d-flex gap-2" [class.justify-content-end]="!config?.showCancel">
-                <button type="button" 
-                        class="btn btn-outline-secondary" 
-                        *ngIf="config?.showCancel"
-                        (click)="cancel()">
-                  {{ config.cancelLabel || '取消' }}
-                </button>
-                <button type="submit" 
-                        class="btn btn-primary"
-                        [disabled]="isSubmitting || readonly">
-                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
-                  {{ config.submitLabel || '提交' }}
-                </button>
-              </div>
-            </div>
-          </div>
+      <footer class="form-actions">
+        <button type="button" class="btn btn-outline-secondary" *ngIf="config?.showCancel" (click)="cancel()">
+          {{ config.cancelLabel || '取消' }}
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="readonly || isSubmitting">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="isSubmitting"></span>
+          預覽及提交
+        </button>
+      </footer>
+    </form>
+  </section>
+
+  <div class="preview-backdrop" *ngIf="previewOpen">
+    <section class="preview-dialog">
+      <header class="preview-header">
+        <h5>提交前預覽</h5>
+        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="closePreview()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </header>
+
+      <div class="preview-body">
+        <div class="preview-row" *ngFor="let row of getPreviewRows()">
+          <div class="preview-label">{{ row.label }}</div>
+          <pre class="preview-value">{{ row.value }}</pre>
         </div>
-      </form>
-    </div>
+      </div>
+
+      <footer class="preview-actions">
+        <button type="button" class="btn btn-outline-secondary" (click)="closePreview()">返回修改</button>
+        <button type="button" class="btn btn-primary" [disabled]="isSubmitting" (click)="submit()">
+          <span class="spinner-border spinner-border-sm me-2" *ngIf="isSubmitting"></span>
+          {{ config.submitLabel || '提交' }}
+        </button>
+      </footer>
+    </section>
   </div>
 </div>

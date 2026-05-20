@@ -1,0 +1,39 @@
+<div class="field-control" [formGroup]="form">
+  <label class="form-label">
+    {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+  </label>
+  <div
+    class="upload-zone"
+    [class.readonly]="isReadonly"
+    [class.has-files]="files.length"
+    (click)="!isReadonly && input.click()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="dragging = false"
+    (drop)="onDrop($event)"
+  >
+    <input
+      #input
+      type="file"
+      class="d-none"
+      [accept]="field.uploadConfig?.accept"
+      [multiple]="(field.uploadConfig?.maxFiles || 1) > 1"
+      (change)="onFilesSelected($any($event.target).files)"
+    />
+    <div class="upload-placeholder">
+      <i class="bi bi-cloud-upload"></i>
+      <span>{{ field.placeholder || '點擊或拖曳檔案至此處上傳' }}</span>
+      <small class="text-muted" *ngIf="field.uploadConfig?.accept">支援格式: {{ field.uploadConfig?.accept }}</small>
+    </div>
+  </div>
+  <div class="file-list" *ngIf="files.length">
+    <div class="file-item" *ngFor="let file of files; let i = index">
+      <i class="bi" [ngClass]="file.type.startsWith('image/') ? 'bi-file-earmark-image' : 'bi-file-earmark'"></i>
+      <span>{{ file.name }}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeFile(i)" *ngIf="!isReadonly">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </div>
+  <small class="form-text text-muted" *ngIf="field.hint">{{ field.hint }}</small>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

@@ -1,0 +1,19 @@
+<div class="field-control" [formGroup]="form">
+  <label [for]="field.key" class="form-label">
+    {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+  </label>
+  <select
+    class="form-select"
+    [class.is-invalid]="errorMessage"
+    [id]="field.key"
+    [formControlName]="field.key"
+    [multiple]="field.multiple"
+    [disabled]="isReadonly || field.disabled"
+    (change)="onSelectionChange($event)"
+  >
+    <option *ngIf="!field.multiple" value="">{{ field.placeholder || '請選擇' }}</option>
+    <option *ngFor="let option of field.options || []" [value]="option.value">{{ option.label }}</option>
+  </select>
+  <small class="form-text text-muted" *ngIf="field.hint">{{ field.hint }}</small>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

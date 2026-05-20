@@ -1,0 +1,22 @@
+<div class="field-control" [formGroup]="form">
+  <label class="form-label">
+    {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+  </label>
+  <div class="radio-options">
+    <div class="form-check" *ngFor="let option of field.options || []">
+      <input
+        type="radio"
+        class="form-check-input"
+        [id]="field.key + '_' + option.value"
+        [name]="field.key"
+        [value]="option.value"
+        [checked]="control?.value === option.value"
+        [disabled]="isReadonly || field.disabled"
+        (change)="updateValue(option.value)"
+      />
+      <label class="form-check-label" [for]="field.key + '_' + option.value">{{ option.label }}</label>
+    </div>
+  </div>
+  <small class="form-text text-muted" *ngIf="field.hint">{{ field.hint }}</small>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

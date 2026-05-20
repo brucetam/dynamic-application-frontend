@@ -36,7 +36,7 @@ export const DEMO_FORM_CONFIG: FormConfig = {
     {
       key: 'password',
       label: '密碼',
-      type: 'text',
+      type: 'password',
       placeholder: '請輸入密碼',
       width: 6,
       validation: [
@@ -47,7 +47,7 @@ export const DEMO_FORM_CONFIG: FormConfig = {
     {
       key: 'confirmPassword',
       label: '確認密碼',
-      type: 'text',
+      type: 'password',
       placeholder: '請再次輸入密碼',
       width: 6,
       validation: [
@@ -67,11 +67,14 @@ export const DEMO_FORM_CONFIG: FormConfig = {
     {
       key: 'phone',
       label: '電話',
-      type: 'text',
-      placeholder: '+886-912345678',
+      type: 'phone',
+      placeholder: '91234567',
       width: 6,
+      phoneConfig: {
+        defaultCountryCode: '+852'
+      },
       validation: [
-        { type: 'pattern', value: '^\+?[\d\s\-()]+$', message: '請輸入有效的電話號碼' }
+        { type: 'required', message: '請輸入電話號碼' }
       ]
     },
     {
@@ -207,6 +210,50 @@ export const DEMO_MATRIX_CONFIG: FormConfig = {
               label: '職業',
               type: 'text',
               width: 3
+            },
+            {
+              key: 'emergencyContacts',
+              label: '緊急聯絡人',
+              type: 'matrix',
+              width: 12,
+              matrixConfig: [
+                {
+                  key: 'emergencyContacts',
+                  label: '緊急聯絡人',
+                  repeatable: true,
+                  minRows: 1,
+                  maxRows: 3,
+                  columns: [
+                    {
+                      key: 'contactName',
+                      label: '姓名',
+                      type: 'text',
+                      width: 4,
+                      validation: [
+                        { type: 'required', message: '請輸入聯絡人姓名' }
+                      ]
+                    },
+                    {
+                      key: 'contactPhone',
+                      label: '電話',
+                      type: 'phone',
+                      width: 4,
+                      phoneConfig: {
+                        defaultCountryCode: '+852'
+                      },
+                      validation: [
+                        { type: 'required', message: '請輸入聯絡人電話' }
+                      ]
+                    },
+                    {
+                      key: 'note',
+                      label: '備註',
+                      type: 'textarea',
+                      width: 4
+                    }
+                  ]
+                }
+              ]
             }
           ],
           repeatable: true,
@@ -225,43 +272,55 @@ export const DEMO_NESTED_CONFIG: FormConfig = {
     {
       key: 'company',
       label: '公司資訊',
-      type: 'text',
+      type: 'matrix',
       width: 12,
-      nestedFields: [
+      matrixConfig: [
         {
-          key: 'companyName',
-          label: '公司名稱',
-          type: 'text',
-          width: 12,
-          validation: [
-            { type: 'required', message: '請輸入公司名稱' }
-          ]
-        },
-        {
-          key: 'companyAddress',
-          label: '公司地址',
-          type: 'textarea',
-          width: 12,
-          validation: [
-            { type: 'required', message: '請輸入公司地址' }
-          ]
-        },
-        {
-          key: 'companyPhone',
-          label: '公司電話',
-          type: 'text',
-          width: 6,
-          validation: [
-            { type: 'required', message: '請輸入公司電話' }
-          ]
-        },
-        {
-          key: 'companyEmail',
-          label: '公司郵箱',
-          type: 'email',
-          width: 6,
-          validation: [
-            { type: 'required', message: '請輸入公司郵箱' }
+          key: 'company',
+          label: '公司資訊',
+          repeatable: false,
+          minRows: 1,
+          maxRows: 1,
+          columns: [
+            {
+              key: 'companyName',
+              label: '公司名稱',
+              type: 'text',
+              width: 12,
+              validation: [
+                { type: 'required', message: '請輸入公司名稱' }
+              ]
+            },
+            {
+              key: 'companyAddress',
+              label: '公司地址',
+              type: 'textarea',
+              width: 12,
+              validation: [
+                { type: 'required', message: '請輸入公司地址' }
+              ]
+            },
+            {
+              key: 'companyPhone',
+              label: '公司電話',
+              type: 'phone',
+              width: 6,
+              phoneConfig: {
+                defaultCountryCode: '+852'
+              },
+              validation: [
+                { type: 'required', message: '請輸入公司電話' }
+              ]
+            },
+            {
+              key: 'companyEmail',
+              label: '公司郵箱',
+              type: 'email',
+              width: 6,
+              validation: [
+                { type: 'required', message: '請輸入公司郵箱' }
+              ]
+            }
           ]
         }
       ]
@@ -279,40 +338,49 @@ export const COMPLEX_FORM_CONFIG: FormConfig = {
     {
       key: 'basicInfo',
       label: '基本資訊',
-      type: 'text',
+      type: 'matrix',
       width: 12,
-      nestedFields: [
+      matrixConfig: [
         {
-          key: 'title',
-          label: '標題',
-          type: 'select',
-          width: 12,
-          options: [
-            { label: '先生', value: 'Mr' },
-            { label: '女士', value: 'Mrs' },
-            { label: '小姐', value: 'Ms' }
-          ],
-          validation: [
-            { type: 'required', message: '請選擇稱謂' }
-          ]
-        },
-        {
-          key: 'name',
-          label: '姓名',
-          type: 'text',
-          width: 6,
-          validation: [
-            { type: 'required', message: '請輸入姓名' }
-          ]
-        },
-        {
-          key: 'idCard',
-          label: '身份證字號',
-          type: 'text',
-          width: 6,
-          validation: [
-            { type: 'required', message: '請輸入身份證字號' },
-            { type: 'pattern', value: '^[A-Z]{1}[0-9]{9}$', message: '身份證格式不正確' }
+          key: 'basicInfo',
+          label: '基本資訊',
+          repeatable: false,
+          minRows: 1,
+          maxRows: 1,
+          columns: [
+            {
+              key: 'title',
+              label: '標題',
+              type: 'select',
+              width: 12,
+              options: [
+                { label: '先生', value: 'Mr' },
+                { label: '女士', value: 'Mrs' },
+                { label: '小姐', value: 'Ms' }
+              ],
+              validation: [
+                { type: 'required', message: '請選擇稱謂' }
+              ]
+            },
+            {
+              key: 'name',
+              label: '姓名',
+              type: 'text',
+              width: 6,
+              validation: [
+                { type: 'required', message: '請輸入姓名' }
+              ]
+            },
+            {
+              key: 'idCard',
+              label: '身份證字號',
+              type: 'text',
+              width: 6,
+              validation: [
+                { type: 'required', message: '請輸入身份證字號' },
+                { type: 'pattern', value: '^[A-Z]{1}[0-9]{9}$', message: '身份證格式不正確' }
+              ]
+            }
           ]
         }
       ]
@@ -320,39 +388,59 @@ export const COMPLEX_FORM_CONFIG: FormConfig = {
     {
       key: 'contactInfo',
       label: '聯絡資訊',
-      type: 'text',
+      type: 'matrix',
       width: 12,
-      nestedFields: [
+      matrixConfig: [
         {
-          key: 'mobile',
-          label: '手機',
-          type: 'text',
-          width: 6,
-          validation: [
-            { type: 'required', message: '請輸入手機號碼' },
-            { type: 'pattern', value: '^09[0-9]{8}$', message: '手機格式不正確' }
+          key: 'contactInfo',
+          label: '聯絡資訊',
+          repeatable: false,
+          minRows: 1,
+          maxRows: 1,
+          columns: [
+            {
+              key: 'mobile',
+              label: '手機',
+              type: 'phone',
+              width: 6,
+              phoneConfig: {
+                defaultCountryCode: '+852'
+              },
+              validation: [
+                { type: 'required', message: '請輸入手機號碼' }
+              ]
+            },
+            {
+              key: 'telephone',
+              label: '市話',
+              type: 'phone',
+              width: 6,
+              phoneConfig: {
+                defaultCountryCode: '+852'
+              }
+            },
+            {
+              key: 'address',
+              label: '通訊地址',
+              type: 'textarea',
+              width: 12,
+              validation: [
+                { type: 'required', message: '請輸入通訊地址' }
+              ]
+            },
+            {
+              key: 'receiveNewsletter',
+              label: '訂閱電子報',
+              type: 'select',
+              width: 12,
+              multiple: true,
+              options: [
+                { label: '產品消息', value: 'product' },
+                { label: '市場活動', value: 'campaign' },
+                { label: '系統通知', value: 'system' }
+              ]
+            }
           ]
-        },
-        {
-          key: 'telephone',
-          label: '市話',
-          type: 'text',
-          width: 6
-        },
-        {
-          key: 'address',
-          label: '通訊地址',
-          type: 'textarea',
-          width: 12,
-          validation: [
-            { type: 'required', message: '請輸入通訊地址' }
-          ]
-        },
-        {
-          key: 'receiveNewsletter',
-          label: '訂閱電子報',
-          type: 'checkbox',
-          width: 12
         }
       ]
     },

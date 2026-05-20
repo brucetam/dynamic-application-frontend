@@ -1,0 +1,24 @@
+<div class="field-control" [formGroup]="form">
+  <label [for]="field.key + '_number'" class="form-label">
+    {{ field.label }} <span *ngIf="isRequired" class="text-danger">*</span>
+  </label>
+  <div class="phone-control">
+    <select class="form-select phone-code" [value]="countryCode" [disabled]="isReadonly || field.disabled" (change)="setCountryCode($any($event.target).value)">
+      <option *ngFor="let option of countryCodes" [value]="option.value">{{ option.label }}</option>
+    </select>
+    <input
+      type="tel"
+      class="form-control"
+      [class.is-invalid]="errorMessage"
+      [id]="field.key + '_number'"
+      [value]="phoneNumber"
+      [placeholder]="field.placeholder || '91234567'"
+      [readonly]="isReadonly"
+      [attr.disabled]="field.disabled ? true : null"
+      (input)="setPhoneNumber($any($event.target).value)"
+      (blur)="emitValue()"
+    />
+  </div>
+  <small class="form-text text-muted" *ngIf="field.hint">{{ field.hint }}</small>
+  <div class="invalid-feedback d-block" *ngIf="errorMessage">{{ errorMessage }}</div>
+</div>

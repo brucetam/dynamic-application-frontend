@@ -31,7 +31,13 @@ export class ValidationService {
 
     switch (rule.type) {
       case 'required':
-        if (val === null || val === undefined || strVal === '') {
+        if (
+          val === null ||
+          val === undefined ||
+          strVal === '' ||
+          (Array.isArray(val) && val.length === 0) ||
+          (typeof val === 'object' && !Array.isArray(val) && Object.values(val).every(item => String(item ?? '').trim() === ''))
+        ) {
           return rule.message || '此欄位為必填';
         }
         break;
@@ -89,6 +95,21 @@ export class ValidationService {
       case 'email':
         if (strVal && !this.validationPatterns['email'].test(strVal)) {
           return '請輸入有效的電子郵件地址';
+        }
+        break;
+
+      case 'phone':
+        if (value?.number && !this.validationPatterns['phone'].test(`${value.countryCode || ''}${value.number}`)) {
+          return '請輸入有效的電話號碼';
+        }
+        if (strVal && typeof value !== 'object' && !this.validationPatterns['phone'].test(strVal)) {
+          return '請輸入有效的電話號碼';
+        }
+        break;
+
+      case 'password':
+        if (strVal && strVal.length < 8) {
+          return '密碼至少需要8個字元';
         }
         break;
 
